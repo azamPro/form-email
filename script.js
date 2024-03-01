@@ -1,16 +1,41 @@
+
+
 function sendMail(){
     if(validateForm()){
-        let params ={
-            from_name: document.getElementById("fullName").value,
-            email_id: document.getElementById("email_id").value,
-            message: document.getElementById("message").value,
+        let email = document.getElementById("email_id").value;
+        
+        if(canSendMoreMessages(email)){
+            let params ={
+                from_name: document.getElementById("fullName").value,
+                email_id: email,
+                message: document.getElementById("message").value,
+            };
+            emailjs.send("service_jwze3l9","template_hzj19fp",params).then(function(res){
+                alert("Success " + res.status);
+            }).catch(function(error) {
+                console.error("Error sending email:", error);
+                alert("Failed to send email. Please try again later.");
+            });
+        } else {
+            alert("You can't send more than 2 messages");
         }
-        console.log(params);
-        emailjs.send("service_code","template_code",params).then(function(res){
-            alert("success" + res.status);
-        })
     }
-    
+}
+
+
+function canSendMoreMessages(email) {
+    // Get the current count for this user (email)
+    let count = localStorage.getItem(email) || 0;
+
+    // Convert count to a number and check if it's less than 2
+    if (Number(count) < 12) {
+        // If less than 2, increase the count and save it
+        localStorage.setItem(email, Number(count) + 1);
+        return true;
+    } else {
+        // If 2 or more, return false
+        return false;
+    }
 }
 
 
